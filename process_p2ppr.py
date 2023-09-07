@@ -4,49 +4,13 @@ from google.cloud import bigquery
 
 client = bigquery.Client()
 
-p2p_pr_header_query = """
-SELECT
-  Client_Id AS ClientID,
-  PR_Number AS PR_Number,
-  Supplier AS Supplier_Name_Original,
-  '' AS Supplier_Name_Normalized,
-  Region,
-  '' AS Country,
-  CAST(PR_Total_Amount_In_Usd AS FLOAT64) AS Value_PR_USD,
-  PR_DELIVERY_DATE AS PR_Completion_Date
-  -- Supplier_Id
-FROM
-  `lisle-pbps-analytics-platform.lisle_pbps_prm.PRM_HEADER`
-"""
+p2p_pr_header_query =  ""  # Query here
 p2p_pr_header_df = client.query(p2p_pr_header_query).to_dataframe()
 
-p2p_pr_details_query = """
-SELECT
-  CAST(CUSTOMER_PARTY_ID AS STRING) AS ClientID,
-  REQ_NUM AS PR_Number,
-  REQ_HDR_SUP_NAME AS Supplier_Name_Original,
-  '' AS Supplier_Name_Normalized,
-  '' AS Region,
-  '' AS Country,
-  CAST(REQ_AMT_TOTAL_USD AS FLOAT64) AS Value_PR_USD,
-  REQ_DTTM_CLOSED AS PR_Completion_Date
-  -- Supplier_Id
-FROM
-  `lisle-pbps-analytics-platform.lisle_pbps_ptp.REQ_RECORD_DETAILS_Views`
-"""
+p2p_pr_details_query =  ""  # Query here
 p2p_pr_details_df = client.query(p2p_pr_details_query).to_dataframe()
 
-supplier_name_global_table_query = """
-SELECT
-  ORG_NAME,
-  ORG_NAME_VARIATION
-FROM 
-  `lisle-pbps-analytics-platform.lisle_pbps_gdm_discovery.DN_LU_ORG_NAME_VARIATION`
-WHERE
-  ORG_NAME IS NOT NULL AND
-  ORG_NAME_VARIATION IS NOT NULL
-ORDER BY ORG_NAME_VARIATION
-"""
+supplier_name_global_table_query =  ""  # Query here
 supplier_name_global_table_df = client.query(supplier_name_global_table_query).to_dataframe()
 
 p2p_pr_df = pd.concat([p2p_pr_header_df, p2p_pr_details_df], ignore_index=True)
@@ -73,7 +37,7 @@ df_to_insert = pd.merge(df_to_insert, supplier_name_global_table_df, left_on='Su
 df_to_insert['Supplier_Name_Normalized'] = df_to_insert['ORG_NAME'].fillna(df_to_insert['Supplier_Name_Original'])
 df_to_insert = df_to_insert.drop(columns=['ORG_NAME', 'ORG_NAME_VARIATION'])
 
-table_id = 'lisle-pbps-analytics-platform.lisle_pbps_supplier_factset_discovery.P2PPR_Supplier_Factset_Table'
+table_id = ''
 job_config = bigquery.LoadJobConfig(
     schema=[
         bigquery.SchemaField('ClientID', 'STRING'),
